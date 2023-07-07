@@ -76,7 +76,7 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data)
   {
     // MQTT connect is successful
     struct mg_str subt = mg_str(s_sub_topic);
-    struct mg_str pubt = mg_str(s_pub_topic), data = mg_str("hellowuyaxingnb");
+    struct mg_str pubt = mg_str(s_pub_topic), data = mg_str("hellowgnb");
     MG_INFO(("%lu CONNECTED to %s", c->id, s_url));
     struct mg_mqtt_opts sub_opts;
     memset(&sub_opts, 0, sizeof(sub_opts));
