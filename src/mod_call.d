@@ -1,0 +1,45 @@
+src/mod_call.o: src/mod_call.c /home/wyx/hi3516/HIVIEW/inc/gsf.h \
+ /home/wyx/hi3516/HIVIEW/fw/nm/inc/nm.h \
+ /home/wyx/hi3516/HIVIEW/fw/cfifo/inc/timer.h \
+ /home/wyx/hi3516/HIVIEW/fw/cfifo/inc/shm.h \
+ /home/wyx/hi3516/HIVIEW/fw/cfifo/inc/cfifo.h \
+ /home/wyx/hi3516/HIVIEW/fw/comm/inc/uthash.h \
+ /home/wyx/hi3516/HIVIEW/fw/comm/inc/list.h \
+ /home/wyx/hi3516/HIVIEW/inc/msg.h \
+ /home/wyx/hi3516/HIVIEW/mod/bsp/inc/log.h \
+ /home/wyx/hi3516/HIVIEW/mod/bsp/inc/bsp.h \
+ /home/wyx/hi3516/HIVIEW/mod/bsp/inc/sjb_bsp.h \
+ /home/wyx/hi3516/HIVIEW/fw/cjson/inc/sjb_api.ih \
+ /home/wyx/hi3516/HIVIEW/fw/cjson/inc/cJSON.h \
+ /home/wyx/hi3516/HIVIEW/mod/bsp/inc/sjb_bsp.ih \
+ /home/wyx/hi3516/HIVIEW/fw/cjson/inc/sjb_end.ih src/mod_call.h \
+ /home/wyx/hi3516/HIVIEW/mod/codec/inc/codec.h \
+ /home/wyx/hi3516/HIVIEW/mod/codec/inc/sjb_codec.h \
+ /home/wyx/hi3516/HIVIEW/mod/codec/inc/sjb_codec.ih \
+ /home/wyx/hi3516/HIVIEW/mod/rec/inc/rec.h \
+ /home/wyx/hi3516/HIVIEW/mod/rec/inc/sjb_rec.h \
+ /home/wyx/hi3516/HIVIEW/mod/rec/inc/sjb_rec.ih \
+ /home/wyx/hi3516/HIVIEW/mod/app/inc/app.h \
+ /home/wyx/hi3516/HIVIEW/mod/svp/inc/sjb_svp.h \
+ /home/wyx/hi3516/HIVIEW/mod/svp/inc/sjb_svp.ih \
+ /home/wyx/hi3516/HIVIEW/mod/app/inc/sjb_app.h \
+ /home/wyx/hi3516/HIVIEW/mod/app/inc/sjb_app.ih \
+ /home/wyx/hi3516/HIVIEW/mod/rtsps/inc/rtsps.h \
+ /home/wyx/hi3516/HIVIEW/mod/rtsps/inc/sjb_rtsps.h \
+ /home/wyx/hi3516/HIVIEW/mod/rtsps/inc/sjb_rtsps.ih \
+ /home/wyx/hi3516/HIVIEW/mod/rtmps/inc/rtmps.h \
+ /home/wyx/hi3516/HIVIEW/mod/rtmps/inc/sjb_rtmps.h \
+ /home/wyx/hi3516/HIVIEW/mod/rtmps/inc/sjb_rtmps.ih \
+ /home/wyx/hi3516/HIVIEW/mod/onvif/inc/onvif.h \
+ /home/wyx/hi3516/HIVIEW/mod/onvif/inc/sjb_onvif.h \
+ /home/wyx/hi3516/HIVIEW/mod/onvif/inc/sjb_onvif.ih \
+ /home/wyx/hi3516/HIVIEW/mod/svp/inc/svp.h \
+ /home/wyx/hi3516/HIVIEW/mod/mqtt_webrtc/inc/mqtt_webrtc.h \
+ /home/wyx/hi3516/HIVIEW/mod/mqtt_webrtc/inc/sjb_mqtt_webrtc.h \
+ /home/wyx/hi3516/HIVIEW/mod/mqtt_webrtc/inc/sjb_mqtt_webrtc.ih \
+ /home/wyx/hi3516/HIVIEW/mod/sips/inc/sips.h \
+ /home/wyx/hi3516/HIVIEW/mod/sips/inc/sjb_sips.h \
+ /home/wyx/hi3516/HIVIEW/mod/sips/inc/sjb_sips.ih \
+ /home/wyx/hi3516/HIVIEW/mod/srts/inc/srts.h \
+ /home/wyx/hi3516/HIVIEW/mod/srts/inc/sjb_srts.h \
+ /home/wyx/hi3516/HIVIEW/mod/srts/inc/sjb_srts.ih
