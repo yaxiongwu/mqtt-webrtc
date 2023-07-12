@@ -9,7 +9,7 @@ extern "C" {
 #include "inc/gsf.h"
 
 //for json cfg;
-#include "mod/mqtt_webrtc/inc/sjb_mqtt_webrtc.h"
+#include "mod/mqtt-webrtc/inc/sjb_mqtt_webrtc.h"
 
 
 #define GSF_IPC_MQTT_WEBRTC "ipc:///tmp/mqtt_webrtc_rep"

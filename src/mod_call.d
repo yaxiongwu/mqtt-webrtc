@@ -34,9 +34,9 @@ src/mod_call.o: src/mod_call.c /home/wyx/hi3516/HIVIEW/inc/gsf.h \
  /home/wyx/hi3516/HIVIEW/mod/onvif/inc/sjb_onvif.h \
  /home/wyx/hi3516/HIVIEW/mod/onvif/inc/sjb_onvif.ih \
  /home/wyx/hi3516/HIVIEW/mod/svp/inc/svp.h \
- /home/wyx/hi3516/HIVIEW/mod/mqtt_webrtc/inc/mqtt_webrtc.h \
- /home/wyx/hi3516/HIVIEW/mod/mqtt_webrtc/inc/sjb_mqtt_webrtc.h \
- /home/wyx/hi3516/HIVIEW/mod/mqtt_webrtc/inc/sjb_mqtt_webrtc.ih \
+ /home/wyx/hi3516/HIVIEW/mod/mqtt-webrtc/inc/mqtt_webrtc.h \
+ /home/wyx/hi3516/HIVIEW/mod/mqtt-webrtc/inc/sjb_mqtt_webrtc.h \
+ /home/wyx/hi3516/HIVIEW/mod/mqtt-webrtc/inc/sjb_mqtt_webrtc.ih \
  /home/wyx/hi3516/HIVIEW/mod/sips/inc/sips.h \
  /home/wyx/hi3516/HIVIEW/mod/sips/inc/sjb_sips.h \
  /home/wyx/hi3516/HIVIEW/mod/sips/inc/sjb_sips.ih \

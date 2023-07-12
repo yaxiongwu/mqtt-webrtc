@@ -8,8 +8,8 @@ src/sjb_mqtt_webrtc.o: src/sjb_mqtt_webrtc.c \
  /home/wyx/hi3516/HIVIEW/mod/codec/inc/sjb_codec.ih \
  /home/wyx/hi3516/HIVIEW/mod/rec/inc/sjb_rec.h \
  /home/wyx/hi3516/HIVIEW/mod/rec/inc/sjb_rec.ih \
- /home/wyx/hi3516/HIVIEW/mod/mqtt_webrtc/inc/sjb_mqtt_webrtc.h \
- /home/wyx/hi3516/HIVIEW/mod/mqtt_webrtc/inc/sjb_mqtt_webrtc.ih \
+ /home/wyx/hi3516/HIVIEW/mod/mqtt-webrtc/inc/sjb_mqtt_webrtc.h \
+ /home/wyx/hi3516/HIVIEW/mod/mqtt-webrtc/inc/sjb_mqtt_webrtc.ih \
  /home/wyx/hi3516/HIVIEW/mod/rtsps/inc/sjb_rtsps.h \
  /home/wyx/hi3516/HIVIEW/mod/rtsps/inc/sjb_rtsps.ih \
  /home/wyx/hi3516/HIVIEW/mod/rtmps/inc/sjb_rtmps.h \
@@ -25,4 +25,4 @@ src/sjb_mqtt_webrtc.o: src/sjb_mqtt_webrtc.c \
  /home/wyx/hi3516/HIVIEW/mod/app/inc/sjb_app.h \
  /home/wyx/hi3516/HIVIEW/mod/app/inc/sjb_app.ih \
  /home/wyx/hi3516/HIVIEW/fw/cjson/inc/sjb_api.ic \
- /home/wyx/hi3516/HIVIEW/mod/mqtt_webrtc/inc/sjb_mqtt_webrtc.ih
+ /home/wyx/hi3516/HIVIEW/mod/mqtt-webrtc/inc/sjb_mqtt_webrtc.ih

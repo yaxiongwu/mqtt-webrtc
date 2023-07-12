@@ -13,5 +13,5 @@ src/cfg.o: src/cfg.c src/cfg.h inc/mqtt_webrtc.h \
  /home/wyx/hi3516/HIVIEW/fw/cjson/inc/cJSON.h \
  /home/wyx/hi3516/HIVIEW/mod/bsp/inc/sjb_bsp.ih \
  /home/wyx/hi3516/HIVIEW/fw/cjson/inc/sjb_end.ih \
- /home/wyx/hi3516/HIVIEW/mod/mqtt_webrtc/inc/sjb_mqtt_webrtc.h \
- /home/wyx/hi3516/HIVIEW/mod/mqtt_webrtc/inc/sjb_mqtt_webrtc.ih
+ /home/wyx/hi3516/HIVIEW/mod/mqtt-webrtc/inc/sjb_mqtt_webrtc.h \
+ /home/wyx/hi3516/HIVIEW/mod/mqtt-webrtc/inc/sjb_mqtt_webrtc.ih

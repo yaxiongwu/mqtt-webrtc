@@ -9,7 +9,7 @@
 #include "mod/rtmps/inc/rtmps.h"
 #include "mod/onvif/inc/onvif.h"
 #include "mod/svp/inc/svp.h"
-#include "mod/mqtt_webrtc/inc/mqtt_webrtc.h"
+#include "mod/mqtt-webrtc/inc/mqtt_webrtc.h"
 #include "mod/sips/inc/sips.h"
 #include "mod/srts/inc/srts.h"
 

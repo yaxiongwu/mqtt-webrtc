@@ -14,8 +14,8 @@ src/mqtt_webrtc.o: src/mqtt_webrtc.c /home/wyx/hi3516/HIVIEW/inc/gsf.h \
  /home/wyx/hi3516/HIVIEW/mod/bsp/inc/sjb_bsp.ih \
  /home/wyx/hi3516/HIVIEW/fw/cjson/inc/sjb_end.ih \
  /home/wyx/hi3516/HIVIEW/fw/comm/inc/proc.h inc/mqtt_webrtc.h \
- /home/wyx/hi3516/HIVIEW/mod/mqtt_webrtc/inc/sjb_mqtt_webrtc.h \
- /home/wyx/hi3516/HIVIEW/mod/mqtt_webrtc/inc/sjb_mqtt_webrtc.ih \
+ /home/wyx/hi3516/HIVIEW/mod/mqtt-webrtc/inc/sjb_mqtt_webrtc.h \
+ /home/wyx/hi3516/HIVIEW/mod/mqtt-webrtc/inc/sjb_mqtt_webrtc.ih \
  src/mongoose.h src/webrtc.h \
  /home/wyx/hi3516/HIVIEW/fw/kvs/inc/com/amazonaws/kinesis/video/webrtcclient/Include.h \
  /home/wyx/hi3516/HIVIEW/fw/kvs/inc/com/amazonaws/kinesis/video/client/Include.h \
@@ -51,7 +51,7 @@ src/mqtt_webrtc.o: src/mqtt_webrtc.c /home/wyx/hi3516/HIVIEW/inc/gsf.h \
  /home/wyx/hi3516/HIVIEW/mod/onvif/inc/sjb_onvif.h \
  /home/wyx/hi3516/HIVIEW/mod/onvif/inc/sjb_onvif.ih \
  /home/wyx/hi3516/HIVIEW/mod/svp/inc/svp.h \
- /home/wyx/hi3516/HIVIEW/mod/mqtt_webrtc/inc/mqtt_webrtc.h \
+ /home/wyx/hi3516/HIVIEW/mod/mqtt-webrtc/inc/mqtt_webrtc.h \
  /home/wyx/hi3516/HIVIEW/mod/sips/inc/sips.h \
  /home/wyx/hi3516/HIVIEW/mod/sips/inc/sjb_sips.h \
  /home/wyx/hi3516/HIVIEW/mod/sips/inc/sjb_sips.ih \
