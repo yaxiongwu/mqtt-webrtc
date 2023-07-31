@@ -1,0 +1,247 @@
+
+    const localVideo = document.querySelector('#localVideo');
+  const remoteVideo = document.querySelector('#remoteVideo');
+  
+  console.log(mqtt)
+  const SourceId = 'source' + Math.random().toString(16).substr(2, 8)
+
+  const host = 'wss://www.bxzryd.cn:8084/mqtt'
+  
+  const topic_sub_source_id = "source/" + SourceId
+
+  const topic_pub_source_reg = "server/reg"
+  const topic_pub_source_query = "server/query"
+
+  const topic_sub_candidate = "cand/" + SourceId
+  const topic_pub_candidate_pre = "cand/"
+
+  const topic_sub_offer = "offer/" + SourceId
+  const topic_pub_offer_pre = "offer/"
+
+  const topic_sub_answer = "answer/" + SourceId
+  const topic_pub_answer_pre = "answer/"
+
+  const topic_sub_want_connect_request = "wantConnectRequest/" + SourceId;
+  const topic_pub_want_connect_reply_pre = "wantConnectReply/";
+
+  const btn = document.getElementById("btn");
+  const labelTextInput = document.getElementById("label");
+
+  let topic_want_connect = ""
+  let client_want_connect = ""
+  let localStream
+
+  const options = {
+    keepalive: 60,
+    clientId: SourceId,
+    protocolId: 'MQTT',
+    protocolVersion: 4,
+    clean: true,
+    reconnectPeriod: 3000,
+    connectTimeout: 30 * 1000,
+    username: "wuyaxiong",
+    password: "wuyaxiong1982",
+    will: {
+      topic: 'WillMsg',
+      payload: 'Connection Closed abnormally..!',
+      qos: 0,
+      retain: false
+    },
+  }
+
+  let sourceInfo = {
+    id: SourceId,
+    localtion: "广东省兴宁市",
+    categorize: "car",
+    username: options.username,
+    label: "testlabel",
+  }
+
+  class WebrtcClient {
+
+  }
+  console.log('Connecting mqtt client')
+
+  var mqttClient;
+  function mqtt_start() {
+    sourceInfo.label = labelTextInput.value;
+    mqttClient = mqtt.connect(host, options)
+
+    mqttClient.on('error', (err) => {
+      console.log('Connection error: ', err)
+      
+    })
+
+    mqttClient.on('reconnect', () => {
+      console.log('Reconnecting...')
+    })
+
+    mqttClient.on('connect', () => {
+      console.log('Client connected:' + SourceId)
+      
+      
+      mqttClient.subscribe(topic_sub_want_connect_request, { qos: 2 })
+      mqttClient.subscribe(topic_sub_candidate, { qos: 2 })
+      mqttClient.subscribe(topic_sub_offer, { qos: 2 })
+      mqttClient.subscribe(topic_sub_answer, { qos: 2 })
+
+      mqttClient.publish(topic_pub_source_reg, JSON.stringify(sourceInfo))
+    })
+
+    
+    
+    
+    
+
+    
+    async function wantConnectRequest(message) {
+      client_want_connect = message
+      let offer = await peerConnect.createOffer(offerOptions)
+      peerConnect.setLocalDescription(offer)
+      console.log("offer ")
+      console.log(offer)
+
+      
+      mqttClient.publish(topic_pub_offer_pre + client_want_connect, JSON.stringify(offer), { qos: 2, retain: false }, function (error) {
+        if (error) {
+          console.log(error)
+        } else {
+          console.log('want connect reply Published')
+        }
+      })
+    }
+
+    mqttClient.on('message', async (topic, message, packet) => {
+      console.log('Received Message: ' + message.toString() + '\nOn topic: ' + topic)
+      
+      switch (topic) {
+        
+        
+        
+        
+        
+        case topic_sub_want_connect_request:
+          wantConnectRequest(message)
+          break;
+        case topic_sub_candidate:
+        let candidata = JSON.parse(message)
+        if (candidata) {
+          this.peerConnect.addIceCandidate(candidata);
+        }
+        console.log("topic_sub_candidate," + candidata)
+          break;
+
+        case topic_sub_answer:
+          let answer = JSON.parse(message)
+          console.log("topic_sub_answer," + answer)
+          if (answer) {
+            try {
+             await this.peerConnect.setRemoteDescription(answer);
+            } catch (e) {
+              console.log('answer-setRemoteDescription: ', e);
+            }
+          }
+          break;
+        default:
+          break;
+      }
+    })
+  }
+
+
+  const configuration = {
+    iceServers: [
+      {
+        urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'],
+      }],
+  };
+  console.log('RTCPeerConnection configuration:', configuration);
+
+  
+  peerConnect = new RTCPeerConnection(configuration);
+
+  const offerOptions = {
+    offerToReceiveAudio: 1,
+    offerToReceiveVideo: 1
+  };
+
+  peerConnect.onicecandidate = (event) => {
+    
+    
+    if (event.candidate) {
+      
+      
+      console.log(event.candidate)
+      
+      
+      
+      
+      mqttClient.publish(topic_pub_candidate_pre + client_want_connect, JSON.stringify(event.candidate), { qos: 2, retain: false }, function (error) {
+        if (error) {
+          console.log(error)
+        } else {
+          console.log('event.candidate Published')
+        }
+      })
+    }
+  };
+
+  peerConnect.oniceconnectionstatechange = (evt) => {
+    console.log('ICE connection state change: ' + evt.target.iceConnectionState);
+    if(evt.target.iceConnectionState == "connected")
+    {
+      
+    }
+  };
+  peerConnect.onaddstream = (event) => {      
+    remoteVideo.srcObject = event.stream;
+    };
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  
+  
+  
+  
+  
+  
+  
+  
+
+  
+  
+  
+
+  
+  
+
+  
+
+  
+  async function streamStart() {
+    console.log('Requesting local stream');
+    try {
+      
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+      console.log('Received local stream');
+      localVideo.srcObject = stream;
+      localStream = stream;
+      peerConnect.addStream(localStream)
+    } catch (e) {
+      alert(`getUserMedia() error: ${e.name}`);
+    }
+  }
+  streamStart();
+
+

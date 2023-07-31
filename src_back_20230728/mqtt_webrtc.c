@@ -52,7 +52,7 @@ static void *_mqtt_task(void *parm);
 // static const char *s_url = "mqtt://www.bxzryd.cn:1883";
 static const char *s_url = "mqtt://120.78.200.246:1883";
 static const char *s_sub_topic = "mg/+/test";    // Publish topic
-static const char *s_pub_topic = "close/source"; // Subscribe topic
+static const char *s_pub_topic = "mg/clnt/test"; // Subscribe topic
 static int s_qos = 2;                            // MQTT QoS
 static struct mg_connection *s_conn;             // Client connection
 
@@ -63,13 +63,13 @@ static const char *sourceId = "source12345";
 static const char *topic_sub_source_id_pre = "source/"; // + SourceId;
 static const char *topic_pub_source_reg = "server/reg";
 static const char *topic_pub_source_query = "server/query";
-static const char *topic_sub_candidate_pre = "candidate"; // + SourceId;
-static const char *topic_pub_candidate_pre = "candidate";
-static const char *topic_sub_offer_pre = "offer"; // + SourceId;
-static const char *topic_pub_offer_pre = "offer";
-static const char *topic_sub_answer_pre = "answer"; // + SourceId;
-static const char *topic_pub_answer_pre = "answer";
-static const char *topic_sub_close_pre = "close";                             //+cientID
+static const char *topic_sub_candidate_pre = "cand/"; // + SourceId;
+static const char *topic_pub_candidate_pre = "cand/";
+static const char *topic_sub_offer_pre = "offer/"; // + SourceId;
+static const char *topic_pub_offer_pre = "offer/";
+static const char *topic_sub_answer_pre = "answer/"; // + SourceId;
+static const char *topic_pub_answer_pre = "answer/";
+static const char *topic_sub_close_pre = "close/";                             //+cientID
 static const char *topic_sub_want_connect_request_pre = "wantConnectRequest/"; // + SourceId;
 static const char *topic_pub_want_connect_reply_pre = "wantConnectReply/";
 char topic_sub_source_id[50];
@@ -83,12 +83,6 @@ struct mg_mqtt_opts sub_opts;
 
 char clientId[20];
 struct mg_mqtt_opts pub_opts;
-
-int webrtc_proc(struct mg_connection *nc, rtc_sess_t **rtc_sess, struct websocket_message *wm)
-{
-  int ret = 0;
-  return ret;
-}
 
 static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data)
 {
@@ -115,7 +109,7 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data)
   else if (ev == MG_EV_MQTT_OPEN)
   {
     // MQTT connect is successful
-    struct mg_str subt = mg_str("");
+    struct mg_str subt = mg_str(""); 
 
     MG_INFO(("%lu CONNECTED to %s", c->id, s_url));
     // sub source id
@@ -124,11 +118,6 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data)
     memset(&sub_opts, 0, sizeof(sub_opts));
     subt = mg_str(topic_sub_source_id);
     sub_opts.topic = subt; // topic_sub_source_id;
-    sub_opts.qos = s_qos;
-    mg_mqtt_sub(c, &sub_opts);
-    MG_INFO(("%lu SUBSCRIBED to %.*s", c->id, (int)subt.len, subt.ptr));
-
-    sub_opts.topic = mg_str("client/#"); // topic_sub_source_id;
     sub_opts.qos = s_qos;
     mg_mqtt_sub(c, &sub_opts);
     MG_INFO(("%lu SUBSCRIBED to %.*s", c->id, (int)subt.len, subt.ptr));
@@ -190,98 +179,41 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data)
     {
       MG_INFO(("%lu topic_sub_want_connect_request RECEIVED %.*s <- %.*s", c->id, (int)mm->data.len,
                mm->data.ptr, (int)mm->topic.len, mm->topic.ptr));
-      char dst[32] = {0};
       strcpy(clientId, mm->data.ptr);
-      strcpy(dst, mm->data.ptr);
 
       int new_flag = 0;
       // new session;
 
-      mqtt_client_t *n = NULL, *client_existed = NULL;
-      list_for_each_entry(n, &(_conn_mqtt.clients), list)
+      rtc_sess = rtc_sess_new();
+      if (rtc_sess)
       {
-        
-        if (!strcmp(n->rtc_sess->dst, dst))
-        {
-          client_existed = n;
-          warn("FINDOUT dst:[%s], rtc_sess:%p\n", dst, client_existed->rtc_sess);
-          break;
-        }
-      }
-      rtc_sess_t *new_sess = NULL, *processing_sess = NULL;
-      // new session;
-      if (!client_existed) // client_existed ==null
-      {
-        printf("wuyaxiong,line 208,rtc_sess_new\n\n");
-        new_sess = rtc_sess_new(); // new() succeed
-        printf("new_sess,1\n\n");
-        if (new_sess)
-        {
-          (new_sess)->mgr = c->mgr;
-          strcpy(new_sess->dst, dst);
-          strcpy(new_sess->topic_mqtt_sub_client, "fromClient/");
-          strcat(new_sess->topic_mqtt_sub_client, dst);
-          strcat(new_sess->topic_mqtt_sub_client, "/#");
-
-          memset(&sub_opts, 0, sizeof(sub_opts));
-
-          sub_opts.topic = mg_str(new_sess->topic_mqtt_sub_client); // topic_sub_source_id;
-          sub_opts.qos = s_qos;
-          mg_mqtt_sub(c, &sub_opts);
-          warn("SUBSCRIBED to %.*s\n", (int)sub_opts.topic.len, sub_opts.topic.ptr);
-
-          // sscanf(dst, ",\"src\":\"%127[^\"]", rtc_sess->dst);
-          // warn("rtc_sess_new nc:%p, (*rtc_sess):%p, src:[%s]\n", c, rtc_sess, rtc_sess->dst);
-          mqtt_client_t *new_cli = (mqtt_client_t *)calloc(1, sizeof(mqtt_client_t)); //!!!!!!!!!!!! where and how free new_cli ?
-          new_cli->rtc_sess = new_sess;
-          warn("WEBRTC_NEW dst:[%s], rtc_sess:%p\n", dst, new_cli->rtc_sess);
-          list_add(&new_cli->list, &(_conn_mqtt.clients));
-          processing_sess = new_sess;
-        }
-        else if (!new_sess) // connect too much ,new() fail
-        {
-          // to do: pub "connect too much error message to client"
-          printf("new_sess fail , conncet too much\n\n");
-          return;
-        }
-      }
-      else  //client_existed !=null
-      {
-        processing_sess = client_existed->rtc_sess;
+        (rtc_sess)->mgr = c->mgr;
+        // char *dst = strstr(sdp_json, ",\"src\":\"");
+        // sscanf(dst, ",\"src\":\"%127[^\"]", rtc_sess->dst);
+        strcpy(rtc_sess->dst, mm->data.ptr);
+        printf("rtc_sess_new , src:[%s]\n", rtc_sess->dst);
       }
 
-      // rtc_sess = rtc_sess_new();
-      // if (rtc_sess)
-      // {
-      //   (rtc_sess)->mgr = c->mgr;
-      //   // char *dst = strstr(sdp_json, ",\"src\":\"");
-      //   // sscanf(dst, ",\"src\":\"%127[^\"]", rtc_sess->dst);
-      //   strcpy(rtc_sess->dst, mm->data.ptr);
-      //   printf("rtc_sess_new , src:[%s]\n", rtc_sess->dst);
-      // }
+      if (!(rtc_sess))
+      {
+        printf("wuyaxiong,rtc_sess_new , conncet too much\n\n");
+        // char dst[128] = {0};
+        // char *pdst = strstr(sdp_json, ",\"src\":\"");
+        // sscanf(pdst, ",\"src\":\"%127[^\"]", dst);
 
-      // if (!(rtc_sess))
-      // {
-      //   printf("wuyaxiong,rtc_sess_new , conncet too much\n\n");
-      //   // char dst[128] = {0};
-      //   // char *pdst = strstr(sdp_json, ",\"src\":\"");
-      //   // sscanf(pdst, ",\"src\":\"%127[^\"]", dst);
-
-      //   // sprintf(sdp_json, "{\"type\":\"close\",\"dst\":\"%s\",\"msg\":\"%s\"}", dst, "conncet too much.");
-      //   // mg_send_websocket_frame(nc, WEBSOCKET_OP_TEXT, sdp_json, strlen(sdp_json));
-      //   return 0;
-      // }
+        // sprintf(sdp_json, "{\"type\":\"close\",\"dst\":\"%s\",\"msg\":\"%s\"}", dst, "conncet too much.");
+        // mg_send_websocket_frame(nc, WEBSOCKET_OP_TEXT, sdp_json, strlen(sdp_json));
+        return 0;
+      }
 
       // char *topic_pub_offer = (char *)malloc(strlen(topic_pub_offer_pre) + strlen(clientId));
-      sprintf(topic_pub_offer, "toClient/%s/%s", clientId, topic_pub_offer_pre);
+      sprintf(topic_pub_offer, "%s%s", topic_pub_offer_pre, clientId);
       char sdp_json[4096] = {0};
       unsigned int sdp_json_len = sizeof(sdp_json);
-      strcpy(processing_sess->dst, mm->data.ptr);
-      sdp_json[0] = '\0';
-      rtc_createOffer((processing_sess), sdp_json, sdp_json_len);
-      // printf("sdp:%s\n",sdp_json);
-      // printf("topic_pub_offer:%s\n",topic_pub_offer);
 
+      strcpy(rtc_sess->dst, mm->data.ptr);
+      sdp_json[0] = '\0';
+      rtc_createOffer((rtc_sess), sdp_json, sdp_json_len);
       memset(&pub_opts, 0, sizeof(pub_opts));
       // char *pubSourceInfo = "{\"id\":\"source12345\",\"localtion\":\"guang dong\",\"categorize\":\"car\",\"label\":\"hi3516\"}";
       struct mg_str pubt = mg_str(topic_pub_offer), data = mg_str(sdp_json);
@@ -290,183 +222,67 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data)
       pub_opts.qos = s_qos, pub_opts.retain = false;
       mg_mqtt_pub(c, &pub_opts);
 
-      // sprintf(topic_sub_close, "fromClient/%s%s",clientId, topic_sub_close_pre);
+      sprintf(topic_sub_close, "%s%s", topic_sub_close_pre, sourceId);
 
-      // memset(&sub_opts, 0, sizeof(sub_opts));
-
-      // sub_opts.topic = mg_str(topic_sub_close); // topic_sub_source_id;
-      // sub_opts.qos = s_qos;
-      // mg_mqtt_sub(c, &sub_opts);
-      // MG_INFO(("%lu SUBSCRIBED to %.*s", c->id, (int)subt.len, subt.ptr));
-
-      //}else if (strncmp(mm->topic.ptr, "client/", (int)mm->topic.len) == 0){
-    }
-    else
-    {
-      // topic like:  fromClient/c895313556/answer
-      char topic_temp[50];
-      if (mm->topic.len > 39)
-      {
-        printf("error :mm->topic.len >39\n");
-        return;
-      }
-      memcpy(topic_temp, mm->topic.ptr, (int)mm->topic.len);
-      topic_temp[(int)mm->topic.len] = NULL;
-      char *clientid_datatype_p1 = strstr(topic_temp, "/"); //  /c895313556/answer
-      char clientid_from_topic[12];
-      char data_type[12];
-      // printf("topic_temp:%s\n\n", topic_temp);
-      if (clientid_datatype_p1 != NULL && clientid_datatype_p1 + 1 != NULL)
-      {
-        //  printf("clientid_datatype_p1:%s\n\n", clientid_datatype_p1);
-        char *clientid_datatype_p2 = strstr((clientid_datatype_p1 + 1), "/"); //  /answer
-        if (clientid_datatype_p2 != NULL && clientid_datatype_p2 + 1 != NULL)
-        {
-        //  printf("clientid_datatype_p2:%s\n\n", clientid_datatype_p2);
-           snprintf(clientid_from_topic, (int)(clientid_datatype_p2 - clientid_datatype_p1), clientid_datatype_p1 + 1);
-         // memcpy(clientid_from_topic, clientid_datatype_p1 + 1, (int)(clientid_datatype_p2 - clientid_datatype_p1-1));
-          strcpy(data_type, clientid_datatype_p2 + 1);
-        }
-      }
-
-      // printf("clientid_from_topic:%s\n\n", clientid_from_topic);
-      // printf("data_type:%s\n\n", data_type);
-
+      memset(&sub_opts, 0, sizeof(sub_opts));
       
-      mqtt_client_t *n = NULL, *client_existed = NULL;
-      list_for_each_entry(n, &(_conn_mqtt.clients), list)
-      {
-        printf("existed list rtc_sess->dst:%s\n",n->rtc_sess->dst);
-        if (!strcmp(n->rtc_sess->dst, clientid_from_topic))
-        {
-          client_existed = n;
-          warn("FINDOUT dst:[%s], rtc_sess:%p\n", clientid_from_topic, client_existed->rtc_sess);
-          break;
-        }
-      }
-      if(client_existed ==NULL)
-      {
-        printf("Don not find dst:[%s]\n",clientid_from_topic);
-        return;
-      }
-
-      if (strcmp(data_type, "answer") == 0)
-      {
-
-
-        char sdp_json[2048] = {0};
-
-        memcpy(sdp_json, mm->data.ptr, mm->data.len);
-        // printf("recv answe:[%s]\n\n", mm->data.ptr);
-
-
-        rtc_setAnswer(client_existed->rtc_sess, sdp_json);
-      }
-      else if (strcmp(data_type, "candidate") == 0)
-      {
-
-        // char *topic_pub_candidate = (char *)malloc(strlen(topic_pub_candidate_pre) + strlen(clientId));
-        sprintf(topic_pub_candidate, "toClient/%s/%s", client_existed->rtc_sess->dst, topic_pub_candidate_pre);
-        struct mg_str pubt = mg_str(topic_pub_candidate), data; //= mg_str(sdp_json);
-        do
-        {
-          char *local_ice = rtc_getCandidate(client_existed->rtc_sess);
-          if (!local_ice)
-            break;
-          {
-            // dst = src;
-            data = mg_str(local_ice);
-            pub_opts.topic = pubt;
-            pub_opts.message = data;
-            pub_opts.qos = s_qos, pub_opts.retain = false;
-            mg_mqtt_pub(c, &pub_opts);
-          }
-        } while (1);
-
-        char ice_json[512] = {0};
-        // char *ice_json = (char *)malloc(512);
-        //  strcpy(ice_json, mm->data.ptr);
-        memcpy(ice_json, mm->data.ptr, (int)mm->data.len);
-        // printf("recv candidate:[%s],len:%d\n\n", ice_json,(int)mm->data.len);
-        rtc_setCandidate(client_existed->rtc_sess, ice_json);
-        // free(ice_json);
-      } else if (strcmp(data_type, "close") == 0){
-        //  mqtt_client_t *n, *nn;
-        //    printf("before close\n");
-        //   list_for_each_entry_safe(n, nn, &(_conn_mqtt.clients), list)
-        //   {
-        //     printf("before close list rtc_sess->dst:%s\n",n->rtc_sess->dst);
-            
-        //   }
-          //list_for_each_entry_safe(n, nn, &conn->clients, list)
-          //{
-              list_del(&client_existed->list);
-              if(client_existed->rtc_sess)
-                rtc_sess_free(client_existed->rtc_sess);
-              free(client_existed);
-          //}
-
-          //  printf("after close\n");
-          // list_for_each_entry_safe(n, nn, &(_conn_mqtt.clients), list)
-          // {
-          //   printf("after close list rtc_sess->dst:%s\n",n->rtc_sess->dst);
-            
-          // }
-
-      }
+      sub_opts.topic =  mg_str(topic_sub_close); // topic_sub_source_id;
+      sub_opts.qos = s_qos;
+      mg_mqtt_sub(c, &sub_opts);
+      //MG_INFO(("%lu SUBSCRIBED to %.*s", c->id, (int)subt.len, subt.ptr));
     }
-    // else if (strncmp(mm->topic.ptr, topic_sub_answer, (int)mm->topic.len) == 0)
-    // {
-    //   char sdp_json[2048] = {0};
+    else if (strncmp(mm->topic.ptr, topic_sub_answer, (int)mm->topic.len) == 0)
+    {
+      char sdp_json[2048] = {0};
 
-    //   memcpy(sdp_json, mm->data.ptr, mm->data.len);
-    //   // printf("recv answe:[%s]\n\n", mm->data.ptr);
+      memcpy(sdp_json, mm->data.ptr, mm->data.len);
+      // printf("recv answe:[%s]\n\n", mm->data.ptr);
 
-    //   rtc_setAnswer(rtc_sess, sdp_json);
-    // }
-    // else if (strncmp(mm->topic.ptr, topic_sub_candidate, (int)mm->topic.len) == 0)
-    // {
-    //   // char *topic_pub_candidate = (char *)malloc(strlen(topic_pub_candidate_pre) + strlen(clientId));
-    //   sprintf(topic_pub_candidate, "%s%s", topic_pub_candidate_pre, clientId);
-    //   struct mg_str pubt = mg_str(topic_pub_candidate), data; //= mg_str(sdp_json);
-    //   do
-    //   {
-    //     char *local_ice = rtc_getCandidate(rtc_sess);
-    //     if (!local_ice)
-    //       break;
-    //     {
-    //       // dst = src;
-    //       data = mg_str(local_ice);
-    //       pub_opts.topic = pubt;
-    //       pub_opts.message = data;
-    //       pub_opts.qos = s_qos, pub_opts.retain = false;
-    //       mg_mqtt_pub(c, &pub_opts);
-    //     }
-    //   } while (1);
+      rtc_setAnswer(rtc_sess, sdp_json);
+    }
+    else if (strncmp(mm->topic.ptr, topic_sub_candidate, (int)mm->topic.len) == 0)
+    {
+      // char *topic_pub_candidate = (char *)malloc(strlen(topic_pub_candidate_pre) + strlen(clientId));
+      sprintf(topic_pub_candidate, "%s%s", topic_pub_candidate_pre, clientId);
+      struct mg_str pubt = mg_str(topic_pub_candidate), data; //= mg_str(sdp_json);
+      do
+      {
+        char *local_ice = rtc_getCandidate(rtc_sess);
+        if (!local_ice)
+          break;
+        {
+          // dst = src;
+          data = mg_str(local_ice);
+          pub_opts.topic = pubt;
+          pub_opts.message = data;
+          pub_opts.qos = s_qos, pub_opts.retain = false;
+          mg_mqtt_pub(c, &pub_opts);
+        }
+      } while (1);
 
-    //   char ice_json[512] = {0};
-    //   // char *ice_json = (char *)malloc(512);
-    //   //  strcpy(ice_json, mm->data.ptr);
-    //   memcpy(ice_json, mm->data.ptr, (int)mm->data.len);
-    //   // printf("recv candidate:[%s],len:%d\n\n", ice_json,(int)mm->data.len);
-    //   rtc_setCandidate(rtc_sess, ice_json);
-    //   // free(ice_json);
-    // }
-    // else if (strncmp(mm->topic.ptr, topic_sub_close, (int)mm->topic.len) == 0)
-    // {
-    //   char closeClientId[12];
-    //   strcpy(closeClientId, mm->data.ptr);
-    //   MG_INFO(("%s CLOSED", closeClientId));
-    //   // free list;
-    //   // mqtt_client_t *n, *nn;
-    //   // list_for_each_entry_safe(n, nn, &conn->clients, list)
-    //   // {
-    //   //   list_del(&n->list);
-    //   //   if (n->rtc_sess)
-    //   //     rtc_sess_free(n->rtc_sess);
-    //   //   free(n);
-    //   // }
-    // }
+      char ice_json[512] = {0};
+      // char *ice_json = (char *)malloc(512);
+      //  strcpy(ice_json, mm->data.ptr);
+      memcpy(ice_json, mm->data.ptr, (int)mm->data.len);
+      // printf("recv candidate:[%s],len:%d\n\n", ice_json,(int)mm->data.len);
+      rtc_setCandidate(rtc_sess, ice_json);
+      // free(ice_json);
+    }
+    else if (strncmp(mm->topic.ptr, topic_sub_close, (int)mm->topic.len) == 0)
+    {
+         char closeClientId[12];
+         strcpy(closeClientId, mm->data.ptr);
+         MG_INFO(("%s CLOSED", closeClientId));
+          //free list;
+          mqtt_client_t *n, *nn;
+          list_for_each_entry_safe(n, nn, &conn->clients, list)
+          {
+              list_del(&n->list);
+              if(n->rtc_sess)
+                rtc_sess_free(n->rtc_sess);
+              free(n);
+          }
+    }
   }
   else if (ev == MG_EV_CLOSE)
   {
@@ -579,7 +395,7 @@ static void timer_fn(void *arg)
                               .qos = s_qos,
                               .topic = mg_str(s_pub_topic),
                               .version = 4,
-                              .message = mg_str(sourceId)};
+                              .message = mg_str("bye")};
   if (s_conn == NULL)
     s_conn = mg_mqtt_connect(mgr, s_url, &opts, fn, NULL);
 }
